@@ -109,8 +109,6 @@ double mdp(
 
 	float delta = -1.0;
 
-
-	int iter = 0;
 	do {
 
 		// for (int i = 0; i < numstates; i++) {
@@ -125,18 +123,20 @@ double mdp(
 
 		cudaMemset(d_action_utils, 0, numstates * numactions * sizeof(float));
 
-		//setTime();
+		setTime();
 		mdp_sum_actions<<<numBlocks, blockSize>>>(
 			numtransitions, numactions, d_tmodel, d_util_prev, d_action_utils);
 		cudaDeviceSynchronize();
 		//std::cout << "Took: " << getTime() << " ms." << std::endl;
 
-		setTime();
+		///setTime();
 		mdp_update_util<<<numBlocks, blockSize>>>(
 			numstates, numactions, discount, d_reward_def, d_util_curr, d_action_utils);
 		//cudaDeviceSynchronize();
 		//std::cout << "Took: " << getTime() << " ms." << std::endl;
-		//elapsed_time += getTime();
+		elapsed_time += getTime();
+
+
 		cudaMemcpy(util_curr, d_util_curr, numstates * sizeof(float), cudaMemcpyDeviceToHost);
 		//sleep(1);
 
@@ -153,9 +153,6 @@ double mdp(
 			delta = max(delta, abs(util_curr[i] - util_prev[i]));
 		}
 
-		std::cout << "Delta = " << delta << std::endl;
-		std::cin.get();
-
 		if (delta < epsilon * (1.0 - discount) / discount) {
 			break;
 		}
@@ -165,10 +162,8 @@ double mdp(
 		util_curr = temp;
 
 		cudaMemcpy(d_util_prev, util_prev, numstates * sizeof(float), cudaMemcpyHostToDevice);
-		iter++;
 	} while (true);
 
-	std::cout << "" << iter << std::endl;
 	return elapsed_time;
 
 }

@@ -224,7 +224,124 @@ It is up to the user to specify the convergence criteria for this algorithm. For
 
 \section{Evaluation Results}
 
-For each test we performed the algorithm was able to achieve proper correctness. To visualize the intended function of this algorithm we supply four heatmaps (all generated using a block size of 1024 and a block number of 1024) that display the distribution of the utility values across the simulated grid world. 
+For each test we performed the algorithm was able to achieve proper correctness. To visualize the intended function of this algorithm we supply four heatmaps (all generated using a block size of 1024 and a block number of 1024) that display the distribution of the utility values across the simulated grid world for each of our sample grid worlds. 
+
+\begin{figure}
+	\centering
+	\includegraphics[scale=0.27]{sample1_hm}
+	\caption{$100\times100$ Grid World}
+\end{figure}
+\begin{figure}
+	\centering
+	\includegraphics[scale=0.27]{sample2_hm}
+	\caption{$200\times200$ Grid World}
+\end{figure}
+\begin{figure}
+	\centering
+	\includegraphics[scale=0.27]{sample3_hm}
+	\caption{$500\times500$ Grid World}
+\end{figure}
+\begin{figure}
+	\centering
+	\includegraphics[scale=0.27]{sample4_hm}
+	\caption{$750\times750$ Grid World}
+\end{figure}
+As is easily seen the last two heat maps are a little hard to make out because of the density of the number of cells in the grid, but the concept is still plain to see.
+
+Essentially, we created these grid worlds with each cell having a default reward value of -0.003. This was to motivate the agent to not exist in the world and do nothing, but rather to seek out the rewards scattered across the grid. After all cells were assigned their default they then had a 5\% chance to have a reward of +10, and another 5\% to have a reward of -10. This is what causes the bright and dark spots on the above heat maps.
+
+Notice how the agent sees states closer to the +10 rewards with a higher utility than the states near the -10 rewards. If it was based solely off of immediate reward we would have only super bright and super dark spots and everything else would be -0.003. The gradient around the high reward cells represent the utility - or the possible future reward that that state might offer. This is the main goal of the value iteration algorithm, and the fact that we can calculate the utilities of states independent of others is what lends it to simple parallelization.
+
+\begin{table}[H]
+	\scriptsize
+	\centering
+	\caption{BlockNum: 8, BlockSize: 256}
+	\label{tab:table1}
+	\begin{tabular}{cccc}
+		\toprule
+		Test Data File & Sequential Time & Parallel Time & Error Percentage\\
+		\midrule
+		Sample1 & 21.204ms & 18.598ms & 0\%\\
+		Sample2 & 94.882ms & 87.756ms & 0\%\\
+		Sample3 & 555.142ms & 395.315ms & 1.6e-05\%\\
+		Sample4 & 1256.54ms & 869.587ms & 1.2e-05\%\\
+		\bottomrule
+	\end{tabular}
+\end{table}
+
+
+\begin{table}[H]
+	\centering
+	\scriptsize
+	\caption{BlockNum: 5, BlockSize: 384}
+	\label{tab:table1}
+	\begin{tabular}{cccc}
+		\toprule
+		Test Data File & Sequential Time & Parallel Time & Error Percentage\\
+		\midrule
+		Sample1 & 21.271ms & 16.821ms & 0\%\\
+		Sample2 & 88.847ms & 77.041ms & 0\%\\
+		Sample3 & 562.22ms & 415.221ms & 1.6e-05\%\\
+		Sample4 & 1320.42ms & 923.771ms & 1.2e-05\%\\
+		\bottomrule
+	\end{tabular}
+\end{table}
+
+
+\begin{table}[H]
+	\centering
+	\scriptsize
+	\caption{BlockNum: 4, BlockSize: 512}
+	\label{tab:table1}
+	\begin{tabular}{cccc}
+		\toprule
+		Test Data File & Sequential Time & Parallel Time & Error Percentage\\
+		\midrule
+		Sample1 & 21.139ms & 16.462ms & 0\%\\
+		Sample2 & 90.933ms & 74.002ms & 0\%\\
+		Sample3 & 576.818ms & 389.442ms & 1.6e-05\%\\
+		Sample4 & 1305.78ms & 854.401ms & 1.2e-05\%\\
+		\bottomrule
+	\end{tabular}
+\end{table}
+
+
+\begin{table}[H]
+	\centering
+	\scriptsize
+	\caption{BlockNum: 2, BlockSize: 768}
+	\label{tab:table1}
+	\begin{tabular}{cccc}
+		\toprule
+		Test Data File & Sequential Time & Parallel Time & Error Percentage\\
+		\midrule
+		Sample1 & 21.147ms & 20.177ms & 0\%\\
+		Sample2 & 90.598ms & 73.573ms & 0\%\\
+		Sample3 & 578.104ms & 431.438ms & 1.6e-05\%\\
+		Sample4 & 1272.74ms & 852.203ms & 1.2e-05\%\\
+		\bottomrule
+	\end{tabular}
+\end{table}
+
+
+\begin{table}[H]
+	\centering
+	\scriptsize
+	\caption{BlockNum: 2, BlockSize: 1024}
+	\label{tab:table1}
+	\begin{tabular}{cccc}
+		\toprule
+		Test Data File & Sequential Time & Parallel Time & Error Percentage\\
+		\midrule
+		Sample1 & 21.404ms & 16.521ms & 0\%\\
+		Sample2 & 90.889ms & 92.353ms & 0\%\\
+		Sample3 & 562.929ms & 383.84ms & 1.6e-05\%\\
+		Sample4 & 1276.11ms & 845.905ms & 1.2e-05\%\\
+		\bottomrule
+	\end{tabular}
+\end{table}
+
+And this is why bla bla bla
 
 \end{document}
 

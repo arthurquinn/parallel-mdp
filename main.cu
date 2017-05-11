@@ -27,7 +27,7 @@ bool cmdOptionExists(char ** begin, char ** end, const std::string& option) {
 void errorMsg() {
     std::cout << "Missing required command line arguments" << std::endl;
     std::cout << "Usage must be of the following format:\n" << std::endl;
-    std::cout << "./mdp -tmodel <transition model file> -reward <reward definition file> -output <output file name>\n" << std::endl;
+    std::cout << "./mdp -tmodel <transition model file> -reward <reward definition file> -output <output file name> -blockSize <block size> -blockNum <block num>\n" << std::endl;
 }
 
 int main(int argc, char ** argv) {
@@ -36,8 +36,8 @@ int main(int argc, char ** argv) {
 
     char * outfile;
 
-    const int blockNum = 1024;
-    const int blockSize = 1024;
+    int blockNum = 1024;
+    int blockSize = 1024;
 
     struct reward * reward_def;
     struct transition * tmodel;
@@ -127,15 +127,34 @@ int main(int argc, char ** argv) {
         return(EXIT_FAILURE);
     }
 
+    // Get block size and block num
+    if ((arg = getCmdOption(argv, argv+argc, "-blockSize"))) {
+        blockSize = atoi(arg);
+    } else {
+        errorMsg();
+        return(EXIT_FAILURE);
+    }
+
+    if ((arg = getCmdOption(argv, argv+argc, "-blockNum"))) {
+        blockNum = atoi(arg);
+    } else {
+        errorMsg();
+        return(EXIT_FAILURE);
+    }
+
+    std::cout << "Block Size: " << blockSize << std::endl;
+    std::cout << "Block Num: " << blockNum << std::endl;
+
     const float epsilon = 0.001;
     const float discount = 0.8;
 
     // Instantiate array where final utilities will be stored
     float * final_utilities = (float *)calloc(numstates, sizeof(float));
+    float * actual_utilities = (float *)calloc(numstates, sizeof(float));
 
-    mdp(numstates, numtransitions, numactions, epsilon, discount, blockNum, blockSize, tmodel, reward_def, final_utilities);
+    double kernel_time = mdp(numstates, numtransitions, numactions, epsilon, discount, blockNum, blockSize, tmodel, reward_def, final_utilities);
 
-    //mdp_seq(numstates, numtransitions, numactions, epsilon, discount, tmodel, reward_def, final_utilities);
+    double seq_time = mdp_seq(numstates, numtransitions, numactions, epsilon, discount, tmodel, reward_def, actual_utilities);
 
     std::ofstream outputFile;
     outputFile.open(outfile);
@@ -143,6 +162,19 @@ int main(int argc, char ** argv) {
         outputFile << "" << i << " " << final_utilities[i] << std::endl;
     }
     outputFile.close();
+
+    // Get number of states that have erroneous utilities
+    float error_bound = 0.01;
+    int numerr = 0;
+    for (int i = 0; i < numstates; i++) {
+        if (abs(final_utilities[i] - actual_utilities[i]) > error_bound) {
+            numerr++;
+        }
+    }
+
+    std::cout << "Total kernel time: " << kernel_time << "ms" << std::endl;
+    std::cout << "Sequential time: " << seq_time << "ms" << std::endl;
+    std::cout << "Percentage of utilities U(s) calculated incorrectly (0.01 tolerance): " << (float)numerr / (float)numstates << "%" << std::endl;
 
     return(EXIT_SUCCESS);
 }

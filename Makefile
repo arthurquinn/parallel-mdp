@@ -7,4 +7,4 @@ clean:
 	rm -f *.o mdp
 
 test:
-	./mdp -tmodel sample2-transition.txt -reward sample2-reward.txt -output sample2-output.txt
+	./mdp -tmodel sample4-transition.txt -reward sample4-reward.txt -output sample4-output.txt -blockSize 1024 -blockNum 2
