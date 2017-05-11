@@ -117,11 +117,13 @@ int main(int argc, char ** argv) {
     }
 
     const float epsilon = 0.001;
+    const float discount = 0.5;
 
     // Instantiate array where final utilities will be stored
-    int * final_utilities = (int *)malloc(numstates * sizeof(int));
+    float * final_utilities = (float *)calloc(numstates, sizeof(float));
+    final_utilities[2] = 1;
 
-    mdp(numstates, numtransitions, numactions, epsilon, blockNum, blockSize, tmodel, reward_def, final_utilities);
+    mdp(numstates, numtransitions, numactions, epsilon, discount, blockNum, blockSize, tmodel, reward_def, final_utilities);
 
     return 0;
 }
