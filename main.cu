@@ -27,12 +27,14 @@ bool cmdOptionExists(char ** begin, char ** end, const std::string& option) {
 void errorMsg() {
     std::cout << "Missing required command line arguments" << std::endl;
     std::cout << "Usage must be of the following format:\n" << std::endl;
-    std::cout << "./mdp -tmodel <transition model file> -reward <reward definition file>\n" << std::endl;
+    std::cout << "./mdp -tmodel <transition model file> -reward <reward definition file> -output <output file name>\n" << std::endl;
 }
 
 int main(int argc, char ** argv) {
 
     char * arg;
+
+    char * outfile;
 
     const int blockNum = 1024;
     const int blockSize = 1024;
@@ -117,19 +119,30 @@ int main(int argc, char ** argv) {
         return(EXIT_FAILURE);
     }
 
+    // Prepare output file
+    if ((arg = getCmdOption(argv, argv+argc, "-output"))) {
+        outfile = arg;
+    } else {
+        errorMsg();
+        return(EXIT_FAILURE);
+    }
+
     const float epsilon = 0.001;
-    const float discount = 0.5;
+    const float discount = 0.8;
 
     // Instantiate array where final utilities will be stored
     float * final_utilities = (float *)calloc(numstates, sizeof(float));
 
-    //mdp(numstates, numtransitions, numactions, epsilon, discount, blockNum, blockSize, tmodel, reward_def, final_utilities);
+    mdp(numstates, numtransitions, numactions, epsilon, discount, blockNum, blockSize, tmodel, reward_def, final_utilities);
 
-    mdp_seq(numstates, numtransitions, numactions, epsilon, discount, tmodel, reward_def, final_utilities);
+    //mdp_seq(numstates, numtransitions, numactions, epsilon, discount, tmodel, reward_def, final_utilities);
 
+    std::ofstream outputFile;
+    outputFile.open(outfile);
     for (int i = 0; i < numstates; i++) {
-        std::cout << "State " << i << ": " << final_utilities[i] << std::endl;
+        outputFile << "" << i << " " << final_utilities[i] << std::endl;
     }
+    outputFile.close();
 
-    return 0;
+    return(EXIT_SUCCESS);
 }
