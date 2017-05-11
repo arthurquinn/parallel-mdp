@@ -9,6 +9,7 @@
 #include "mdp_structs.h"
 
 #include "mdp.cu"
+#include "mdp-sequential.cpp"
 
 char* getCmdOption(char ** begin, char ** end, const std::string & option) {
 
@@ -121,9 +122,14 @@ int main(int argc, char ** argv) {
 
     // Instantiate array where final utilities will be stored
     float * final_utilities = (float *)calloc(numstates, sizeof(float));
-    final_utilities[2] = 1;
 
-    mdp(numstates, numtransitions, numactions, epsilon, discount, blockNum, blockSize, tmodel, reward_def, final_utilities);
+    //mdp(numstates, numtransitions, numactions, epsilon, discount, blockNum, blockSize, tmodel, reward_def, final_utilities);
+
+    mdp_seq(numstates, numtransitions, numactions, epsilon, discount, tmodel, reward_def, final_utilities);
+
+    for (int i = 0; i < numstates; i++) {
+        std::cout << "State " << i << ": " << final_utilities[i] << std::endl;
+    }
 
     return 0;
 }

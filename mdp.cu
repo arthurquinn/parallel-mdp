@@ -49,7 +49,7 @@ __global__ void mdp_kernel(
 			for (int j = 0; j < numactions; j++) {
 				amax = max(amax, action_utils[state * numactions + j]);
 			}
-			util_curr[state] = reward_def[state].reward + 0.5 * amax;
+			util_curr[state] = reward_def[state].reward + discount * amax;
 		}
 	}
 
@@ -95,7 +95,7 @@ void mdp(
 			printf("%f\n", util_curr[i]);
 		}
 
-		mdp_kernel<<<numBlocks, blockSize, numstates + sizeof(float) * numactions>>>(
+		mdp_kernel<<<numBlocks, blockSize, numstates * numactions * sizeof(float)>>>(
 			numstates, numtransitions, numactions, discount, d_tmodel, d_reward_def, d_util_prev, d_util_curr);
 		cudaDeviceSynchronize();
 
