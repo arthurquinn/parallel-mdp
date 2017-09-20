@@ -1,8 +1,0 @@
-\BOOKMARK [1][-]{section.1}{Introduction}{}% 1
-\BOOKMARK [1][-]{section.2}{Background}{}% 2
-\BOOKMARK [1][-]{section.3}{Implementation Details}{}% 3
-\BOOKMARK [2][-]{subsection.3.1}{Action Utility Summation}{section.3}% 4
-\BOOKMARK [2][-]{subsection.3.2}{Update Utility}{section.3}% 5
-\BOOKMARK [2][-]{subsection.3.3}{Buffer Swapping}{section.3}% 6
-\BOOKMARK [2][-]{subsection.3.4}{Convergence Criteria}{section.3}% 7
-\BOOKMARK [1][-]{section.4}{Evaluation Results}{}% 8
